@@ -30,7 +30,7 @@
 .pub/
 /build/
 /lib/secrets.dart
-
+lib/secrets.dart
 
 # Web related
 lib/generated_plugin_registrant.dart
