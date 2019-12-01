@@ -57,6 +57,7 @@ Map<String, dynamic> mywidgetsLib = {
       '''positioned(left:${self.vars["left"]}_top:${self.vars["top"]}_width:${self.vars["width"]}_height:${self.vars["height"]})'''
     }
     },
+
   "formatted":{
     "vars":(var tokens){
       return {
@@ -148,6 +149,7 @@ Map<String, dynamic> mywidgetsLib = {
       '''padding(padding:@padding}~align(alignment:@align)~sizedBox(h:${self.vars["height"]}_w:${self.vars["width"]})'''
     }
     },
+    
   "pctWide":{
     "vars":(var tokens){
       return {

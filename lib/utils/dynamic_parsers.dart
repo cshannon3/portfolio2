@@ -51,7 +51,6 @@ dynamic tryParse(var tokens, List<String> names,
   int i = 0;
   tokens = trySplit(tokens, type);
   if(tokens is List){
-
     while (out == null && i < names.length) {
     if (tokens.contains(names[i]))
       out = parseToken(tokens, label:names[i],dictName: names[0], type: type);
@@ -59,20 +58,18 @@ dynamic tryParse(var tokens, List<String> names,
   }
   }
   else{
-  while (out == null && i < names.length) {
-    if (tokens.containsKey(names[i])){
-      out = parseType?parseToken(tokens[names[i]],dictName: names[0], type: type):tokens[names[i]];
+    while (out == null && i < names.length) {
+      if (tokens.containsKey(names[i])){
+        out = parseType?parseToken(tokens[names[i]],dictName: names[0], type: type):tokens[names[i]];
+      }
+      i++;
     }
-    i++;
   }
-  }
-  
   return out;
 }
 
 parseToken(var tokens, {var label,var dictName, var type = "double"}) {
   var tok = tokens;
-  
   if(tokens is List){
     tok = tokens[tokens.indexOf(label) + 1];
   }

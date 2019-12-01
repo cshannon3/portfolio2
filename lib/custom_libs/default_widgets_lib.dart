@@ -1,7 +1,10 @@
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:portfolio3/custom_makers/model_maker.dart';
 import 'package:portfolio3/utils/dynamic_parsers.dart';
+import 'package:portfolio3/utils/jsonParseWidget.dart';
 import 'package:portfolio3/utils/main_animator.dart';
 import 'package:portfolio3/utils/main_painter.dart';
 import 'package:portfolio3/utils/random.dart';
@@ -42,19 +45,32 @@ Map<String, dynamic> widgetLib = {
     );
   },
   "column": (var tokens) {
-    return Column(children: ifIs(tokens, "children"));
+    return Column(
+      mainAxisAlignment: getMainAlign(tokens),
+      children: ifIs(tokens, "children"));
   },
   "container": (var tokens) {
     return Container(
       height: parseMap["height"](tokens),
       width: parseMap["width"](tokens),
-      color: parseMap["color"](tokens),
+      //color: parseMap["color"](tokens),
       child: ifIs(tokens, "child"),
-      decoration: tokens.containsKey("boxDec") ? tokens["boxDec"] : null,
+      decoration: BoxDecoration(
+        color: parseMap["color"](tokens),
+        border: tokens.containsKey("bColor")?
+            Border.all(
+              color: tryParse(tokens, ["bColor"], type: "color")??Colors.black, 
+              width:tryParse(tokens, ["bWidth", "bw"])??1.0
+              )
+              :null,
+        shape: (tokens.containsKey("shape") && tokens["shape"]=="circle")?BoxShape.circle:BoxShape.rectangle,
+        borderRadius: tokens.containsKey("bRadius")?new BorderRadius.all(new Radius.circular(parseToken(tokens["bRadius"]))):null,
+      )
+      //tokens.containsKey("boxDec") ? tokens["boxDec"] : null,
     );
   },
   "dropdown": (var tokens) {
-    print(tokens);
+    //print(tokens);
     var str= ifIs(tokens, "items")??[""];
     return DropdownButton<String>(
       value: ifIs(tokens, "value")??"",
@@ -112,6 +128,11 @@ Map<String, dynamic> widgetLib = {
   "listView": (var tokens) {
     //print(children);
     return ListView(children: ifIs(tokens, "children"));
+  },
+  "jsonToModel": (var tokens) {
+    //print(children);
+    var json = ifIs(tokens, "json") ?? {};
+    return JsonToDataModel(json:json);
   },
   "padding": (var tokens) {
     return Padding(padding: getPadding(tokens), child: ifIs(tokens, "child"));
@@ -178,7 +199,10 @@ Map<String, dynamic> widgetLib = {
   },
 
   "row": (var tokens) {
-    return Row(children: ifIs(tokens, "children") ?? []);
+    return Row(
+      mainAxisAlignment: getMainAlign(tokens),
+      children: ifIs(tokens, "children") ?? []
+      );
   },
   "sizedBox": (var tokens) {
     return SizedBox(
@@ -202,3 +226,31 @@ Map<String, dynamic> widgetLib = {
 
 
 
+
+MainAxisAlignment getMainAlign(tokens){
+  var p = tryParse(tokens, ["align", "mainAlign", "al", "mainAlignment"], parseType: false);
+  if(p==null)return MainAxisAlignment.start;
+  switch (p){
+    case "center":
+    return MainAxisAlignment.center;
+    break;
+    case "end":
+    return MainAxisAlignment.end;
+    break;
+    case "start":
+    return MainAxisAlignment.start;
+    break;
+    case "around":
+    return MainAxisAlignment.spaceAround;
+    break;
+    case "evenly":
+    return MainAxisAlignment.spaceEvenly;
+    break;
+    case "between":
+    return MainAxisAlignment.spaceBetween;
+    break;
+    
+  }
+  return MainAxisAlignment.start;
+
+}

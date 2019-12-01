@@ -2,10 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:portfolio3/custom_makers/model_maker.dart';
+import 'package:portfolio3/custom_makers/w2.dart';
 import 'package:portfolio3/mydata/textdata.dart';
 import 'package:portfolio3/secrets.dart';
 import 'package:portfolio3/state_manager.dart';
 import 'package:portfolio3/utils/main_animator.dart';
+import 'package:portfolio3/utils/utils.dart';
 
 Map<String, dynamic> routesStr = {
    "/":'''stack()
@@ -34,7 +36,14 @@ Map<String, dynamic> routesStr = {
                 ~@hello
     ]
     ''',
-     "/quotes": "listView()[@forEach(models:@data(name:quotes))]"//_widget:padding(all:8)~container(all:8_color:green200)~center()
+     "/quotes": '''stack()[
+       fitted(l:0_r:30_t:5_b:100_h:@h_w:@w)
+       ~listView()[
+            @forEach(models:@data(name:quotes)_widget:
+                (padding(all:4)~container(c:blue200_bColor:black_bWidth:4.0))
+                )
+          ]
+      ]'''//_widget:padding(all:8)~container(all:8_color:green200)~center()
   }
 };
 Map<String, dynamic> myLib = {
@@ -43,25 +52,58 @@ Map<String, dynamic> myLib = {
 
   },
   "functions":(StateManager s)=>{
-    "h":(var tokens)=> (tokens.containsKey("frac"))?s.h*double.tryParse(tokens["frac"])??1.0:s.h,
-    "w":(var tokens)=> (tokens.containsKey("frac"))?s.w*double.tryParse(tokens["frac"])??1.0:s.w,
-    // fourierLines(stepPerUpdate:2.5_thickness:8)
+    "h":(var tokens)=> (tokens.containsKey("frac"))?s.screenSize.height*double.tryParse(tokens["frac"])??1.0:s.screenSize.height,
+    "w":(var tokens)=> (tokens.containsKey("frac"))?s.screenSize.width*double.tryParse(tokens["frac"])??1.0:s.screenSize.width,
     "data":(var tokens){
       print(tokens);
-      if(tokens.containsKey("name") && s.dataMap.containsKey(tokens["name"])){
-        return s.dataMap[tokens["name"]]["models"];
+      if(tokens.containsKey("name") && s.dataController.dataMap.containsKey(tokens["name"])){
+        return s.dataController.dataMap[tokens["name"]]["models"];
       }
       return [];
     },
+    "getVar":(var tokens){
+      var name = ifIs(tokens, "name");
+      if(name==null)return null;
+      // switch(name){
+      //   case "jsonData":
+      //   return s.jsonData;
+      //   break; // }// return null;
+    },
+    "getController":(var tokens){
+      var name = ifIs(tokens, "name");
+      if(name==null)return null;
+      var type = ifIs(tokens, "type");
+      if(s.controllerMap.containsKey(name))return s.controllerMap[name];
+      if(type==null)return null;
+      switch (type){
+        case "text": 
+          s.controllerMap[name]=TextEditingController(); 
+          return s.controllerMap[name];
+          break;
+      }return null;
+    },
+    "disposeControllers":(var tokens){
+      s.controllerMap.forEach((k,v){
+        try{ v.dispose(); }catch(e){} });
+    },
     "forEach":(var tokens){
       List<Widget> out=[];
-      String str = tokens.containsKey("widget")? tokens["widget"]+"~":"";
+      String str = ifIs(tokens, "widget")??"";
+      if(str!=""){
+        str=str.substring(str.indexOf("(")+1, str.lastIndexOf(")"))+"~";
+      }
+      print("FOREAch");
       print(str);
       if(tokens.containsKey("models")){
         tokens["models"].forEach((m){
         if(m is String) {print("m");}//m=CustomModel.fromLib(m)};
         if(m is CustomModel){    
-            if(m.calls.containsKey("toStr"))out.add(s.customWidget.toWidget(dataStr:str+m.calls["toStr"]()));
+            if(m.calls.containsKey("toStr")){
+              var widg;
+              try{widg=s.customWidget.toWidget(dataStr:str+m.calls["toStr"]());}
+              catch(e){widg=s.customWidget.toWidget(dataStr:m.calls["toStr"]());}
+              out.add(widg);
+            }
             else if(m.calls.containsKey("toWidget"))out.add(m.calls["toWidget"]());
             if(m.calls.containsKey("toWidgetList"))out.addAll(m.calls["toWidgetList"]());
         }
@@ -121,7 +163,7 @@ Map<String, dynamic> myLib = {
                 "key": "",
                 "url": "https://opentdb.com/api.php",
                 "amount":10,
-                "category":1,
+                "category":18,
                 "endpoints":["questions"],
                 "currentEndpoint":"questions",
               },

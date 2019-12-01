@@ -3,6 +3,14 @@ import 'dart:math';
 import 'dart:html' as html;
 import 'dart:typed_data';
 
+
+List trimList(var list, {skipEmpty=true}){
+  List out = [];
+  list.forEach((l){
+    if(l.trim()!="" || !skipEmpty)out.add(l.trim());
+    });
+  return out;
+}
 dynamic ifIs(var tokens, var name) =>
     (tokens!=null && tokens.containsKey(name)) ? tokens[name] : null;
 
