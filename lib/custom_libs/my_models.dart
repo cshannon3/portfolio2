@@ -81,7 +81,7 @@ Map<String, dynamic> mymodelsLib = {
            "text": tokens.containsKey("text")?new List<String>.from(tokens["text"]).join():"",//(tokens["text"] is List)?tokens['text']:
             "author": tokens.containsKey("author")?tokens["author"]:"", 
             "categories": tokens.containsKey("categories")?new List<String>.from(tokens['categories']):[],
-             "source":tokens.containsKey("source")?tokens["source"]:"",
+             "source":""//tokens.containsKey("source")?tokens["source"]:"",
              },
     "functions": (CustomModel self) => {
           "fromMap": (Map<String, dynamic> map) {

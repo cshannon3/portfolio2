@@ -2,11 +2,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:googleapis/games/v1.dart';
 import 'package:portfolio3/custom_makers/model_maker.dart';
 import 'package:portfolio3/utils/dynamic_parsers.dart';
+import 'package:portfolio3/utils/editable_container.dart';
 import 'package:portfolio3/utils/jsonParseWidget.dart';
 import 'package:portfolio3/utils/main_animator.dart';
 import 'package:portfolio3/utils/main_painter.dart';
+import 'package:portfolio3/utils/physicsbox.dart';
 import 'package:portfolio3/utils/random.dart';
 import 'package:portfolio3/utils/utils.dart';
 
@@ -22,6 +25,9 @@ Map<String, dynamic> widgetLib = {
       model: (ifIs(tokens, "model") is CustomModel)?tokens["model"]:null,
       models: (ifIs(tokens, "models") is List<CustomModel>)?tokens["models"]:null,
     );
+  },
+  "editable":(var tokens){
+
   },
   "stack": (var tokens) {
     return Stack(children: ifIs(tokens, "children") ?? []);
@@ -220,12 +226,43 @@ Map<String, dynamic> widgetLib = {
     return RaisedButton(
       onPressed:tryParse(tokens, ["onPressed", "onPress", "tap"], parseType: false)??(){},
       child: ifIs(tokens, "child") ?? Container());
-  }
+  },
+  "image":(var tokens){
+   // print(tokens);
+   print(tokens);
+   var path = ifIs(tokens, "path");
+   if(path is String &&!path.contains("images"))path= "assets/images/"+path;
+   var url = ifIs(tokens, "url");
+   var fit = ifIs(boxFits, ifIs(tokens, "fit"));
+    return (path!=null)?
+    Image.asset(path, fit: fit,):
+    url!=null?
+    Image.network(url, fit: fit,):Container();
+
+  },
+  "editable":(var tokens){
+    return EditableContainer(tokens: tokens,);
+  },
+  "draggable":(var tokens){
+      var left= parseMap["left"](tokens) ?? 0.0;
+      var top= parseMap["top"](tokens) ?? 0.0;
+      var  right= parseMap["right"](tokens) ?? 0.0;
+      var bottom=parseMap["bottom"](tokens) ?? 0.0;
+      print(tokens);
+    return// Container(height: ifIs(tokens, "screenH"), width: ifIs(tokens, "screenW"),color: Colors.green,child:
+     PhysicsBox(h: ifIs(tokens, "screenH"),w:ifIs(tokens, "screenW"),dragBox: DragBox(left: left/100, right: right/100,top: top/100,bottom: bottom/100),child:ifIs(tokens, "child") ?? Container());//);
+  },
 
 };
 
 
-
+Map<String, BoxFit> boxFits={
+  "fill":BoxFit.fill,
+  "width":BoxFit.fitWidth,
+  "height":BoxFit.fitHeight,
+  "contain":BoxFit.contain,
+  "cover":BoxFit.cover
+} ;
 
 MainAxisAlignment getMainAlign(tokens){
   var p = tryParse(tokens, ["align", "mainAlign", "al", "mainAlignment"], parseType: false);

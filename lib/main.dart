@@ -6,29 +6,29 @@ import 'package:portfolio3/state_manager.dart';
 import 'package:firebase/firestore.dart';
 import 'package:firebase/firebase.dart' as fb;
 
-main() async {
-  try {
-    fb.initializeApp(
-    apiKey: secrets["apiKey"],
-    authDomain: secrets["authDomain"],
-    databaseURL: secrets["databaseURL"],
-    projectId: secrets["projectId"],
-    storageBucket: secrets["storageBucket"],
-    messagingSenderId: secrets["messagingSenderId"],
-    );
+// main() async {
+//   try {
+//     fb.initializeApp(
+//     apiKey: secrets["apiKey"],
+//     authDomain: secrets["authDomain"],
+//     databaseURL: secrets["databaseURL"],
+//     projectId: secrets["projectId"],
+//     storageBucket: secrets["storageBucket"],
+//     messagingSenderId: secrets["messagingSenderId"],
+//     );
 
-   // var db = fb.firestore();
+//    // var db = fb.firestore();
 
-    runApp(MyApp());
+//     runApp(MyApp());
     
-  } on fb.FirebaseJsNotLoadedException catch (e) {
-    print(e);
-  }
-}
+//   } on fb.FirebaseJsNotLoadedException catch (e) {
+//     print(e);
+//   }
+// }
 
-//  main() async {
-//    runApp(MyApp());
-//  }
+ main() async {
+   runApp(MyApp());
+ }
 class MyApp extends StatelessWidget {
   MyApp();
   @override
@@ -59,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     stateManager.initialize(
-      //fb.firestore()
+      //firestoredb:fb.firestore()
       );
     stateManager.addListener((){
       setState(() {});

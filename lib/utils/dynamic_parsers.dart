@@ -121,10 +121,11 @@ dynamic trySplit(var tokens, String type){
 
 
 
-
+List<String> colorOptions=["", "black","white","pink","red","orange", "amber", "yellow","lime", "lightGreen","green","teal","cyan","lightBlue","blue","indigo","purple","grey","brown","blueGrey"];
 //String to(String baseName) => capWord(baseName) + "Model";
-Color colorFromString(String color){
+Color colorFromString(String color, {double opacity}){
   var incr;
+  if(opacity==null)opacity=1.0;
   if (color.contains("[")){
     var c = color.split("[");
     color = c[0];
@@ -136,26 +137,52 @@ Color colorFromString(String color){
       if(incr!=null)color=color.substring(0,color.length-3);
   }
     switch(color){
+      case "":
+        return Colors.transparent;
+         case "transparent":
+        return Colors.transparent;
       case "black":
-        return Colors.black;
+        return Colors.black.withOpacity(opacity);
       case "red":
-        return (incr!=null)?Colors.red[incr]: Colors.red;
+        return (incr!=null)?Colors.red[incr].withOpacity(opacity): Colors.red.withOpacity(opacity);
       case "grey":
-        return (incr!=null)?Colors.grey[incr]: Colors.grey;
+        return (incr!=null)?Colors.grey[incr].withOpacity(opacity): Colors.grey.withOpacity(opacity);
       case "indigo":
-        return (incr!=null)?Colors.indigo[incr]: Colors.indigo;
+        return (incr!=null)?Colors.indigo[incr].withOpacity(opacity): Colors.indigo.withOpacity(opacity);
       case "blue":
-        return (incr!=null)?Colors.blue[incr]: Colors.blue;
+        return (incr!=null)?Colors.blue[incr].withOpacity(opacity): Colors.blue.withOpacity(opacity);
       case "green":
-        return (incr!=null)?Colors.green[incr]: Colors.green;
+        return (incr!=null)?Colors.green[incr].withOpacity(opacity): Colors.green.withOpacity(opacity);
       case "purple":
-        return (incr!=null)?Colors.purple[incr]: Colors.purple;
+        return (incr!=null)?Colors.purple[incr].withOpacity(opacity): Colors.purple.withOpacity(opacity);
+      case "pink":
+        return (incr!=null)?Colors.pink[incr].withOpacity(opacity): Colors.pink.withOpacity(opacity);
+      case "amber":
+        return (incr!=null)?Colors.amber[incr].withOpacity(opacity): Colors.amber.withOpacity(opacity);
+        case "lime":
+        return (incr!=null)?Colors.lime[incr].withOpacity(opacity): Colors.lime.withOpacity(opacity);
+        case "brown":
+        return (incr!=null)?Colors.brown[incr].withOpacity(opacity): Colors.brown.withOpacity(opacity);
+        case "blueGrey":
+        return (incr!=null)?Colors.blueGrey[incr].withOpacity(opacity): Colors.blueGrey.withOpacity(opacity);
+        case "indigo":
+        return (incr!=null)?Colors.indigo[incr].withOpacity(opacity): Colors.indigo.withOpacity(opacity);
+        case "cyan":
+        return (incr!=null)?Colors.cyan[incr].withOpacity(opacity): Colors.cyan.withOpacity(opacity);
+        case "teal":
+        return (incr!=null)?Colors.teal[incr].withOpacity(opacity): Colors.teal.withOpacity(opacity);
+        case "lightBlue":
+        return (incr!=null)?Colors.lightBlue[incr].withOpacity(opacity): Colors.lightBlue.withOpacity(opacity);
+      case "lightGreen":
+        return (incr!=null)?Colors.lightGreen[incr].withOpacity(opacity): Colors.lightGreen.withOpacity(opacity);
       case "white":
-        return Colors.white;
+        return Colors.white.withOpacity(opacity);
       case "orange":
-        return (incr!=null)?Colors.orange[incr]: Colors.orange;
+        return (incr!=null)?Colors.orange[incr].withOpacity(opacity): Colors.orange.withOpacity(opacity);
+      case "yellow":
+        return (incr!=null)?Colors.yellow[incr].withOpacity(opacity): Colors.yellow.withOpacity(opacity);
       case "random":
-        return RandomColor.next();
+        return RandomColor.next().withOpacity(opacity);
       default:
         return Colors.black;
     }

@@ -3,7 +3,17 @@ import 'dart:math';
 import 'dart:html' as html;
 import 'dart:typed_data';
 
-
+dynamic checkPath(var map, List path){
+  int i = 0;
+  if(map is Map){
+    while (map.containsKey(path[i])){
+      map = map[path[i]];
+      i++;
+      if(i==path.length)return [true, map];
+    }
+    return [false, null];
+  }else return [false, null];
+}
 List trimList(var list, {skipEmpty=true}){
   List out = [];
   list.forEach((l){
@@ -11,8 +21,8 @@ List trimList(var list, {skipEmpty=true}){
     });
   return out;
 }
-dynamic ifIs(var tokens, var name) =>
-    (tokens!=null && tokens.containsKey(name)) ? tokens[name] : null;
+dynamic ifIs(var tokens, var name) => 
+    (tokens!=null && name!=null && tokens.containsKey(name)) ? tokens[name] : null;
 
 String capWord(String word) {
   if (!word.contains("_")) return word[0].toUpperCase() + word.substring(1);
@@ -65,6 +75,54 @@ double progressFromZ(double zlength, double radius) {
 double progressFromK(double klength, double radius) {
   return toProgress(asin(klength / radius));
 }
+
+
+    Map<String, dynamic> fonts = {
+    "Bebas Neue":{
+      "italic":[],
+      "normal":[400]
+    },
+    "Flamante Roma":{
+      "italic":[400],
+      "normal":[400]
+    },
+    "Gidole":{
+      "italic":[],
+      "normal":[400]
+    },
+    "Icomoon":{
+      "italic":[],
+      "normal":[400]
+    },
+    "Nexa":{
+      "italic":[],
+      "normal":[300,400]
+    },
+    "Petita":{
+      "italic":[],
+      "normal":[300,400,700]
+    },
+    "Rubik":{
+      "italic":[],
+      "normal":[400,500]
+    },
+    "SF Speakeasy":{
+      "italic":[],
+      "normal":[400]
+    },
+    "Pixel Emulator":{
+      "italic":[],
+      "normal":[400]
+    },
+    "Montserrat":{
+      "italic":[100,200,300,400,500,600,700,800,900],
+      "normal":[100,200,300,400,500,600,700,800,900]
+    },
+    "SF Pro Display":{
+      "italic":[],
+      "normal":[100,200,300,400,500,600,700,800,900]
+    }
+    };
 class Platform {
   var _iOS = ['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'];
 

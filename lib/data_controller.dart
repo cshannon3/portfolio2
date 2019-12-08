@@ -11,35 +11,51 @@ import "package:googleapis/slides/v1.dart" as slides;
 import 'package:googleapis/docs/v1.dart' as docs;
 import 'package:portfolio3/secrets.dart';
 
+import 'package:http/http.dart' as http;
 
 class DataController  {
-  Map<String, dynamic> dataMap = datamaps.dataMap;
+  //Map<String, dynamic> dataMap = datamaps.dataMap;
+  Map<String,dynamic> firebaseModels={};
+  Map<String,dynamic> apiModels={};
+  Map<String,dynamic> googleAPIModels={};
+  auth.AutoRefreshingAuthClient googleAuthClient;
+
   Firestore db;
   bool initialized = false;
 
   DataController();
-  initialize(Firestore _db){
-    db=_db;
-    initialized=true;
+
+  Future<dynamic> getJsonResult({String url = "", Uri uri}) async {
+    if (url != "") {
+      http.Response res = await http.get(url);
+      return json.decode(res.body);
+    }
+    return null;
+  }
+  initialize({Firestore firestoredb}){
+    if(firestoredb!=null){db=firestoredb;initialized=true;}
+    print("hey");
+    datamaps.dataMap.forEach((key, data){
+      if(data["type"]=="firebase")
+          firebaseModels[key]=CustomModel.fromMap(data);
+      else if(data["type"]=="api")
+          apiModels[key]=CustomModel.fromMap(data);
+      else if(data["type"]=="googleAPI")
+          googleAPIModels[key]=CustomModel.fromMap(data);
+    });
+  //  if(initialized)getAllFirebaseData();
+    
   }
 
-  initializeGoogle() async {
+  authorizeGoogleUser() async {
     final identifier = new auth.ClientId(
      secrets["googleClientID"],
      secrets["googleAPIKey"]);
-    
     final scopes = [drive.DriveApi.DriveScope, calendar.CalendarApi.CalendarScope, sheets.SheetsApi.SpreadsheetsScope,docs.DocsApi.DocumentsScope ];
     auth.createImplicitBrowserFlow(identifier, scopes).then((onValue){
       onValue.clientViaUserConsent().then((client) {
-        print("HEY");
-        var myDocs = docs.DocsApi(client);
-        myDocs.documents.get("16wLizatyKJVH4x0Zpz2wVoeUYAcxbmsvJ2xJsAKOBfE").then((docData){
-          var str = docData.body.toString();
-          print(str.length);
-          print(str);        }).catchError((onError){
-            print("EEEEERRR");
-          });
-
+        googleAuthClient=client;
+        googleAPIModels["googleDocs"].calls["getData"]({"client":googleAuthClient});
   }).catchError((error) {
     if (error is auth.UserConsentException) {
       print("You did not grant access :(");
@@ -48,6 +64,7 @@ class DataController  {
     }
   });
     });
+
   }
     Future<List<CustomModel>> getDataList(String modelName, String source) async{
       List<CustomModel> em = [];
@@ -66,31 +83,15 @@ class DataController  {
   }
   Future<void> getAllFirebaseData(){
       if(!initialized)return null;
-      dataMap.forEach((key, infoMap) {// print("\n\n$key\n\n");infoMap["collection_name"]
-        infoMap["models"] = getFirebaseData(infoMap["collection_name"]);
-    });
-  }
-  Future<dynamic> getFirebaseData(String collectionName, {bool toCustomModel=true}){
-      if(!initialized)return null;
-      db
-          .collection(collectionName)
-          .onSnapshotMetadata
-          .listen((onData) {
-        var l = [];
-        onData.docs.forEach((dataItem) {
-          if(toCustomModel){
-            try {
-              l.add(CustomModel.fromLib({"name": collectionName, "vars": dataItem.data()}));
-            } catch (e) {
-              print(dataItem.data());
-              print("err");}
-          }
-          else l.add(dataItem.data());
-        });
-        return l;
+      print("y");
+      firebaseModels.forEach((key, firebaseModel) async{
+
+       await firebaseModel.calls["getData"]({"firestore":db});
       });
-      
+      print("j");
+      return null;
   }
+ 
   Future<List<drive.File>> searchTextDocuments(drive.DriveApi api,
                                              int max,
                                              String query) {
@@ -112,31 +113,22 @@ class DataController  {
   return next(null);
 }
 }
+class FirebaseManager {
+  Firestore fs;
+  
+
+}class GoogleManager {
+
+}
 
 
-
-    // var api = new drive.DriveApi(client);
-    // var calendarApi = new calendar.CalendarApi(client);
-    // var sheetsApi = new sheets.SheetsApi(client);
-    // print("\n\nSheets\n\n");
-    // print(sheetsApi.spreadsheets.sheets);
-    //     calendarApi.events.list("primary").then((_events) {
-    //       print("\n\nEvents\n\n");
-    //       print(_events.toJson());
-    // });
-    // var query;
-    // searchTextDocuments(api, 20, query).then((List<drive.File> files) {
-
-    // }).catchError((error) {
-    //   print('An error occured: $error');
-    // }).whenComplete(() {
-    //   client.close();
-    // });
-
-    /*
-
-I Have A Dream - 1-0TRJYy0dsDTbzXZHVEBRVOC8BiWv9_34IgyrX7Zn8w
-   Battle Of Britain - 1WOx1ro53mE8YiOH_iOfMY0UqiOD3KAIV3mGovb_ZE2o
-   Gettysburg Address - 16wLizatyKJVH4x0Zpz2wVoeUYAcxbmsvJ2xJsAKOBfE
-   Declaration of Ind 1mtPVlFVytbsYJ8VONrRGfEXnzFfEavF9dbQQmakYOWg
-    */
+        //  db.collection(firebaseModel.vars[""])
+        //               .onSnapshotMetadata
+        //               .listen((onData) {
+        //             onData.docs.forEach((dataItem) {
+        //               print(dataItem.data());
+                       
+        //             });
+        //           });
+       // print(key);
+       // await 

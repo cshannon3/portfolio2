@@ -11,6 +11,10 @@ class CustomWidget2 {
   Map<String, dynamic> lib;
   var calls;
   var tempLib={};
+  var _screenH;
+  var _screenW;
+  Function _setState;
+
 
   CustomWidget2({
     this.lib, 
@@ -106,12 +110,15 @@ class CustomWidget2 {
   }
 
 dynamic toWidget(
-      {var dataStr, var libIn, var children}) {
+      {var dataStr, var libIn, var children, var screenH, var screenW, Function setState}) {
+        if (setState!=null ) _setState=setState;
+        if (screenH!=null ) _screenH=screenH;
+        if (screenW!=null ) _screenW=screenW;
         if(lib==null)lib={};
         if(libIn!=null)tempLib=libIn;
         if(calls==null)calls={}; // if(libIn!=null)libIn.forEach((key, val){lib[key]=val;});
         var stems=[];
-        var map={};
+        Map<String, dynamic> map={"screenH":_screenH, "screenW":_screenW, "setState":setState};
         
     if (dataStr is String) {
         // stems[0] is the widget name, stems[1] is whats inside the paren, stems[2] the child/children data
@@ -121,7 +128,7 @@ dynamic toWidget(
       if(stems.length>1 && stems[1]!=""){
         map= tokensToMap([stems[1]], map);// print("MAP");// print(map);
         map.forEach((k,v){
-          if((v.contains("(") || v.contains("@"))&& v[0]!="(" ){// Parsing any widgets inside the map
+          if(v is String && (v.contains("(") || v.contains("@"))&& v[0]!="(" ){// Parsing any widgets inside the map
             map[k]=toWidget(dataStr: v);
           }
         });
@@ -157,7 +164,7 @@ dynamic toWidget(
        if (lib.containsKey(widgetName.substring(1)))
           return lib[widgetName.substring(1)];
         if (tempLib.containsKey(widgetName.substring(1))){
-          print(widgetName); // print(widgetName.substring(1));// print(tempLib[widgetName.substring(1)]);
+        //  print(widgetName); // print(widgetName.substring(1));// print(tempLib[widgetName.substring(1)]);
          return tempLib[widgetName.substring(1)];
         }
       if (calls.containsKey(widgetName.substring(1)))

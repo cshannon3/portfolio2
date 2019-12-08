@@ -1,12 +1,14 @@
 import 'dart:async';
-import 'dart:convert';//import 'package:firebase/firestore.dart';
+import 'dart:convert';
+import 'package:firebase/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:portfolio3/custom_makers/model_maker.dart';
 import 'package:portfolio3/custom_makers/w2.dart';
 import 'package:portfolio3/data_controller.dart';
-import 'package:http/http.dart' as http;
 import 'package:portfolio3/datamaps.dart' as datamaps;
 import 'package:portfolio3/utils/utils.dart';
+
+//import 'package:firebase/firebase.dart' as fb;
 
 class StateManager extends ChangeNotifier {
  // Timer timer;
@@ -22,46 +24,34 @@ class StateManager extends ChangeNotifier {
   //double h;double w;
   bool initiated = false;
   var routes = {};
-  Map<String,dynamic> apiOptions={};
+  bool editorOpen= true;
+  //Map<String,dynamic> apiOptions={};
 
-  Future<dynamic> getJsonResult({String url = "", Uri uri}) async {
 
-    if (url != "") {
-      http.Response res = await http.get(url);
-      return json.decode(res.body);
-    }
-    return null;
-  }
 
   initialize(
-   // Firestore _db,
+    {Firestore firestoredb}//_db,
   ) async {
     //db = _db;
     routes = datamaps.routesStr;
     navigation = Navigation(() => notifyListeners(), routes);
     customWidget = CustomWidget2(
         lib: datamaps.myLib["vars"](), calls: datamaps.myLib["functions"](this));
-   datamaps.apiMap.forEach((k,v){
-     print(k);
-      apiOptions[k]=CustomModel.fromMap(v);
-    });
-    dataController.initializeGoogle();
-   // print(apiOptions);
-    //dataController.initialize(db);
-    // var appdata = dataController.getFirebaseData("appData", toCustomModel:false)
-    // dataController.getAllFirebaseData()
-    // (dataMap["quotes"]["models"] as List).shuffle();
+    await dataController.initialize(firestoredb: firestoredb);
+    //await dataController.authorizeGoogleUser();
     initiated = true;
     notifyListeners();
   }
 
   List<Widget> getDataChoices() {
     List<Widget> out = [];
-    dataController.dataMap.forEach((k, v) {
+   // dataController.dataMap.forEach((k, v) {
+      dataController.firebaseModels.forEach((k, v) {
+        print(k);
       out.add(ExpansionTile(
         title: Text(k),
-        children: List.generate(v["models"].length, (i) {
-          return v["models"][i].calls["toLabel"]();
+        children: List.generate(v.vars["models"].length, (i) {
+          return v.vars["models"][i].calls["toLabel"]();
         }),
       ));
     });
@@ -70,31 +60,63 @@ class StateManager extends ChangeNotifier {
 
   Widget getCurrentScreen() {
     var dat={};
-    List<String> options = apiOptions.isNotEmpty?apiOptions.keys.toList():[""];
-  String dropdownValue = options[0];
-    String endpoint =(dropdownValue!="")?apiOptions[dropdownValue].vars["endpoints"][0]:"";
+    //List<String> options = apiOptions.isNotEmpty?apiOptions.keys.toList():[""];
+    List<String> options = dataController.apiModels.isNotEmpty?dataController.apiModels.keys.toList():[""];
+    String dropdownValue = options[0];
+    String endpoint =(dropdownValue!="")?dataController.apiModels[dropdownValue].vars["endpoints"][0]:"";
     if (!initiated) return Container();
     controllerMap["scriptText"].text=navigation.getCurrentScreenStr();
    // textFieldController.text = navigation.getCurrentScreenStr();
     return StatefulBuilder(
       builder: (BuildContext context, setState) {
+        var screenh= MediaQuery.of(context).size.height;
+        var screenw= MediaQuery.of(context).size.width;
+        //if(editorOpen)screenw=(editorOpen)?screenw*2/3:screenw;
         return Row(
           children: <Widget>[
             Container(
               height: screenSize.height,
-              width: screenSize.width * 2 / 3,
+              width:  (editorOpen)?screenw*2/3:screenw-30.0,//screenSize.width*14/15,
               child:
                   customWidget // "tm":TextModel(text: "@@bold@@Curently Reading@@bold@@").toRichText()}
-                      .toWidget(dataStr: controllerMap["scriptText"].text),
+                      .toWidget(dataStr: controllerMap["scriptText"].text, screenH:screenh, screenW:(editorOpen)?screenw*2/3:screenw-30.0),
             ),
-            Container(
-              height: screenSize.height,
-              width: screenSize.width/ 3,
+            !editorOpen?Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Container(width: 30.0,//screenSize.width/15,
+                  child:IconButton(
+                          onPressed: (){
+                            setState((){
+                              editorOpen=true;
+                            });},
+                            icon: Icon(Icons.plus_one),
+                          )),
+                           Container(width: 30.0,//screenSize.width/15,
+                  child:IconButton(
+                          onPressed: (){
+                            setState((){
+                              editorOpen=true;
+                            });},
+                            icon: Icon(Icons.arrow_back),
+                          )),
+              ],
+            ):Container(
+              height: screenh,//screenSize.height,
+              width: screenw*1/3,//screenSize.width/ 3,
               color: Colors.grey[100],
               child: DefaultTabController(
                 length: 3,
                 child: Scaffold(
                   appBar: AppBar(
+                    leading: IconButton(
+                      onPressed: (){
+                        setState((){
+                          editorOpen=false;
+                        });
+                      },
+                      icon: Icon(Icons.arrow_forward),
+                    ),
                     bottom: TabBar(
                       tabs: [
                         Tab(text: "Script", icon: Icon(Icons.edit)),
@@ -113,14 +135,14 @@ class StateManager extends ChangeNotifier {
                     "onChange":(String newValue) {
                                   setState(() {
                                     dropdownValue= newValue;//datamaps.apiMap[dropdownValue]["endpoints"]
-                                    endpoint = apiOptions[dropdownValue].vars["endpoints"][0]; });},
+                                    endpoint = dataController.apiModels[dropdownValue].vars["endpoints"][0]; });},
+                                    //apiOptions[dropdownValue].vars["endpoints"][0]; });},
                     "onChange2":(String newValue) {setState(() { endpoint = newValue; });},
-                    "endpoints":apiOptions[dropdownValue].vars["endpoints"],
+                    "endpoints":dataController.apiModels[dropdownValue].vars["endpoints"],//apiOptions[dropdownValue].vars["endpoints"],
                     "getData":() {
-                      getJsonResult(url:apiOptions[dropdownValue].calls["getUrl"]()).then((res){
-                                      print(res);
+                      dataController.getJsonResult(url:dataController.apiModels[dropdownValue].calls["getUrl"]()).then((res){
+                    //apiOptions[dropdownValue].calls["getUrl"]()).then((res){ // print(res);// customWidget.tempLib["jsonData"]=res;//if(res!=null)currentText=res.toString();
                                       dat=res;
-                                     // customWidget.tempLib["jsonData"]=res;//if(res!=null)currentText=res.toString();
                                       setState((){});});}
                   },
                   dataStr: '''
@@ -268,6 +290,21 @@ class Navigation {
   }
 }
 
+
+
+   // print(apiOptions);
+    //dataController.initialize(db);
+    // var appdata = dataController.getFirebaseData("appData", toCustomModel:false)
+    // dataController.getAllFirebaseData()
+    // (dataMap["quotes"]["models"] as List).shuffle();
+  //  datamaps.apiMap.forEach((k,v){
+  //    print(k);
+  //     apiOptions[k]=CustomModel.fromMap(v);
+  //   });
+  //  datamaps.dataMap.forEach((k,v){
+  //    if(v["type"]=="api")
+  //     apiOptions[k]=CustomModel.fromMap(v);
+  //   });
 //  padding(l:5_r:5)~row()[
 //                           container()~text(text:Name ),
 //                           expanded()~container()

@@ -47,10 +47,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #  - images/a_dot_burr.jpeg
-  #  - images/a_dot_ham.jpeg
-
+  assets:
+    - assets/images/coverphoto.jpg
+    - assets/images/co.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
@@ -82,6 +81,7 @@ flutter:
       fonts:
         - asset: assets/fonts/Nexa_Bold.otf
         - asset: assets/fonts/Nexa_Light.otf
+          weight: 300
     - family: Petita
       fonts:
         - asset: assets/fonts/PetitaBold.ttf
@@ -100,45 +100,70 @@ flutter:
     - family: Pixel Emulator
       fonts:
         - asset: assets/fonts/pixel_emulator.otf
-    - family: SF Pro Display
-      fonts:
-        - asset: fonts/SF-Pro-Display-Ultralight.otf
-          weight: 100
-        - asset: fonts/SF-Pro-Display-Thin.otf
-          weight: 200
-        - asset: fonts/SF-Pro-Display-Light.otf
-          weight: 300
-        - asset: fonts/SF-Pro-Display-Regular.otf
-          weight: 400
-        - asset: fonts/SF-Pro-Display-Medium.otf
-          weight: 500
-        - asset: fonts/SF-Pro-Display-Semibold.otf
-          weight: 600
-        - asset: fonts/SF-Pro-Display-Bold.otf
-          weight: 700
-        - asset: fonts/SF-Pro-Display-Heavy.otf
-          weight: 800
-        - asset: fonts/SF-Pro-Display-Black.otf
-          weight: 900
+        
+    # - family: SF Pro Display
+    #   fonts:
+    #     - asset: assets/fonts/SF-Pro-Display-Ultralight.otf
+    #       weight: 100
+    #     - asset: assets/fonts/SF-Pro-Display-Thin.otf
+    #       weight: 200
+    #     - asset: assets/fonts/SF-Pro-Display-Light.otf
+    #       weight: 300
+    #     - asset: assets/fonts/SF-Pro-Display-Regular.otf
+    #       weight: 400
+    #     - asset: assets/fonts/SF-Pro-Display-Medium.otf
+    #       weight: 500
+    #     - asset: assets/fonts/SF-Pro-Display-Semibold.otf
+    #       weight: 600
+    #     - asset: assets/fonts/SF-Pro-Display-Bold.otf
+    #       weight: 700
+    #     - asset: assets/fonts/SF-Pro-Display-Heavy.otf
+    #       weight: 800
+    #     - asset: assets/fonts/SF-Pro-Display-Black.otf
+    #       weight: 900
     - family: Montserrat
       fonts:
-        - asset: fonts/Montserrat-ExtraLight.otf
+        - asset: assets/fonts/Montserrat-ExtraLight.otf
           weight: 100
-        - asset: fonts/Montserrat-Thin.otf
+        - asset: assets/fonts/Montserrat-Thin.otf
           weight: 200
-        - asset: fonts/Montserrat-Light.otf
+        - asset: assets/fonts/Montserrat-Light.otf
           weight: 300
-        - asset: fonts/Montserrat-Regular.otf
+        - asset: assets/fonts/Montserrat-Regular.otf
           weight: 400
-        - asset: fonts/Montserrat-Medium.otf
+        - asset: assets/fonts/Montserrat-Medium.otf
           weight: 500
-        - asset: fonts/Montserrat-Semibold.otf
+        - asset: assets/fonts/Montserrat-Semibold.otf
           weight: 600
-        - asset: fonts/Montserrat-Bold.otf
+        - asset: assets/fonts/Montserrat-Bold.otf
           weight: 700
-        - asset: fonts/Montserrat-ExtraBold.otf
+        - asset: assets/fonts/Montserrat-ExtraBold.otf
           weight: 800
-        - asset: fonts/Montserrat-Black.otf
+        - asset: assets/fonts/Montserrat-Black.otf
+          weight: 900
+        - asset: assets/fonts/Montserrat-ExtraLightItalic.otf
+          style: italic
+          weight: 100
+        - asset: assets/fonts/Montserrat-ThinItalic.otf
+          style: italic
+          weight: 200
+        - asset: assets/fonts/Montserrat-LightItalic.otf
+          style: italic
+          weight: 300
+        - asset: assets/fonts/Montserrat-MediumItalic.otf
+          style: italic
+          weight: 500
+        - asset: assets/fonts/Montserrat-SemiboldItalic.otf
+          style: italic
+          weight: 600
+        - asset: assets/fonts/Montserrat-BoldItalic.otf
+          style: italic
+          weight: 700
+        - asset: assets/fonts/Montserrat-ExtraBoldItalic.otf
+          style: italic
+          weight: 800
+        - asset: assets/fonts/Montserrat-BlackItalic.otf
+          style: italic
           weight: 900
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
